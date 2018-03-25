@@ -9,6 +9,7 @@ using TodoApi.Models;
 
 namespace TodoApi.Controllers
 {
+    [Produces("application/json")]
     [Route("api/[controller]")]
     public class TodoController : Controller
     {
@@ -43,8 +44,28 @@ namespace TodoApi.Controllers
             return new ObjectResult(item);
         }
 
-        // POST should be return: 201 response code
+
+        /// <summary>
+        /// Creates a TodoItem.
+        /// </summary>
+        /// <remarks>
+        /// Sample request:
+        ///
+        ///     POST /Todo
+        ///     {
+        ///        "id": 1,
+        ///        "name": "Item1",
+        ///        "isComplete": true
+        ///     }
+        ///
+        /// </remarks>
+        /// <param name="item"></param>
+        /// <returns>A newly-created TodoItem</returns>
+        /// <response code="201">Returns the newly-created item</response>
+        /// <response code="400">If the item is null</response>            
         [HttpPost]
+        [ProducesResponseType(typeof(TodoItem), 201)]
+        [ProducesResponseType(typeof(TodoItem), 400)]
         public IActionResult Create([FromBody] TodoItem item)
         {
             if (item == null)
@@ -54,7 +75,6 @@ namespace TodoApi.Controllers
 
             _context.TodoItems.Add(item);
             _context.SaveChanges();
-
             return CreatedAtRoute("GetTodo", new { id = item.Id }, item);
         }
 
@@ -81,7 +101,11 @@ namespace TodoApi.Controllers
             return new NoContentResult();
         }
 
-        // DELETE should be return: 204 response code
+        /// <summary>
+        /// Delete a specified TodoItem
+        /// </summary>
+        /// <returns>204 code</returns>
+        /// <param name="id">Id</param>
         [HttpDelete("{id}")]
         public IActionResult Delete(long id)
         {
